@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import subprocess
+
+
+def main():
+    # TODO: Split to functions
+    # make it callable for single steps or at least install and post-install
+    description = 'This tool helps to manage packages in custom LFS installation'
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('-i', "--install", metavar="PACKAGE", help="Install package")
+
+    args = parser.parse_args()
+
+    package_db = '/usr/local/share/hpm/packages'
+    src_directory = '/sources/'
+    package = args.install
+
+    if package:
+        print(f'Installing package {package}')
+
+        with open(package_db) as db:
+            while True:
+                line = db.readline()
+
+                if not line:
+                    break
+                
+                # Prepare package data structure
+                package_row = [field.strip() for field in line.split('-|-') if field]
+                if package_row[0] == package:
+                    package_entry = {
+                        'name': package_row[0],
+                        'version': package_row[1],
+                        'compression': package_row[3],
+                        'patch': package_row[4],
+                        'pre-install': package_row[5],
+                        'configure': package_row[6],
+                        'build': package_row[7],
+                        'post-build': package_row[8],
+                        'test': package_row[9],
+                        'install': package_row[10],
+                        'post-install': package_row[11],
+                        'dependencies': package_row[13]
+                    }
+
+                    # Installation routine
+                    print(f'Entering {src_directory}')
+                    os.chdir(src_directory)
+
+                    if package_entry['name'].startswith('tcl') or package_entry['name'] == 'expect':
+                        package_directory = f'{package_entry["name"]}{package_entry["version"]}'
+                    else:
+                        package_directory = f'{package_entry["name"]}-{package_entry["version"]}'
+                   
+                    print('Unpacking the tarball')
+                    unarchive_command = ['tar', '-xf', f'{package_directory}.tar.{package_entry["compression"]}']
+                    subprocess.run(unarchive_command)
+
+                    print(f'Entering {package_directory}/')
+                    os.chdir(package_directory)
+
+                    patch_commands = []
+                    preinstall_commands = []
+                    configure_command = []
+                    build_command = []
+                    postbuild_commands = []
+                    test_command = []
+                    install_command = []
+                    postinstall_commands = []
+
+                    if package_entry['patch'] != 'SKIP':
+                        for patch in package_entry["patch"].split():
+                            patch_command = ['patch', '-Np1', '-i', f'../{patch}']
+                            print(f'Patches: run({patch_command})')
+                            patch_commands.append(patch_command)
+
+                    if package_entry['pre-install'] != 'SKIP':
+                        for preinstall in package_entry['pre-install'].split('@@')[:-1]:
+                            preinstall_command = preinstall
+                            print(f'Pre-install scripts: run({preinstall_command}, shell=True)')
+                            preinstall_commands.append(preinstall_command)
+
+                    if package_entry['configure'] != 'SKIP':
+                        if package_entry['configure'] == 'DEFAULT':
+                            configure_command = ['./configure', '--prefix=/usr']
+                        elif package_entry['name'] == 'glibc' or package_entry['name'] == 'dejagnu' or package_entry['name'] == 'binutils' or package_entry['name'] == 'gcc':
+                            configure_command = ['../configure'] + package_entry['configure'].split()
+                        else:
+                            configure_command = ['./configure'] + package_entry['configure'].split()
+                        print(f'Configure: run({configure_command})')
+
+                    if package_entry['build'] != 'SKIP':
+                        if package_entry['build'] == 'DEFAULT':
+                            build_command = ['make']
+                        else:
+                            build_command = ['make'] + package_entry['build'].split()
+                        print(f'Build: run({build_command})')
+
+                    if package_entry['post-build'] != 'SKIP':
+                        for postbuild in package_entry['post-build'].split('@@')[:-1]:
+                            postbuild_command = postbuild
+                            print(f'Post-build scripts: run({postbuild_command}, shell=True)')
+                            postbuild_commands.append(postbuild_command)
+                    
+                    if package_entry['test'] != 'SKIP':
+                        if package_entry['test'] == 'DEFAULT':
+                            test_command = ['make', 'check']
+                        else:
+                            test_command = ['make'] + package_entry['test'].split()
+                        print(f'Test: run({test_command})')
+
+                    if package_entry['install'] != 'SKIP':
+                        if package_entry['install'] == 'DEFAULT':
+                            install_command = ['make', 'install']
+                        else:
+                            install_command = ['make'] + package_entry['install'].split() + ['install']
+                        print(f'Install: run({install_command})')
+
+                    if package_entry['post-install'] != 'SKIP':
+                        for postinstall in package_entry['post-install'].split('@@')[:-1]:
+                            postinstall_command = postinstall
+                            print(f'Post-install scripts: run({postinstall_command}, shell=True)')
+                            postinstall_commands.append(postinstall_command)
+
+                    confirm = input('Confirm that all commands are correct and enter Y to proceed [Y/n] ')
+
+                    if confirm == "Y" or confirm == "y":
+                        print('Proceed...')
+
+                        if patch_commands:
+                            for p_command in patch_commands:
+                                print(f'Running patches: {" ".join(p_command)}')
+                                subprocess.run(p_command)
+
+                        if preinstall_commands:
+                            if package_entry['name'] == 'glibc' or package_entry['name'] == 'dejagnu' or package_entry['name'] == 'binutils' or package_entry['name'] == 'gcc':
+                                    os.mkdir('build')
+                                    os.chdir('build')
+                            elif package_entry['name'] == 'tcl':
+                                os.chdir('unix')
+                            for pre_command in preinstall_commands:
+                                print(f'Running pre-install scripts: {pre_command}')
+                                subprocess.run(pre_command, shell=True)
+                        
+                        if configure_command:
+                            print(f'Configuring: "{" ".join(configure_command)}"')
+                            subprocess.run(configure_command)
+
+                        if build_command:
+                            print(f'Building: "{" ".join(build_command)}"')
+                            subprocess.run(build_command)
+
+                        if postbuild_commands:
+                            for postb_command in postbuild_commands:
+                                print(f'Running post-build scripts: "{postb_command}"')
+                                subprocess.run(postb_command, shell=True)
+
+                        if test_command:
+                            print(f'Testing: "{" ".join(test_command)}"')
+                            subprocess.run(test_command)
+
+                        test_confirm = input('Are tests successful? Continue? [Y/n] ')
+                        if test_confirm == 'Y' or test_confirm == 'y':
+                            if install_command:
+                                print(f'Installing: "{" ".join(install_command)}"')
+                                subprocess.run(install_command)
+
+                            if postinstall_commands:
+                                for post_command in postinstall_commands:
+                                    print(f'Running post-install scripts: "{post_command}"')
+                                    subprocess.run(post_command, shell=True)
+                        else:
+                            break
+
+                        print(f'Package {package_entry["name"]} installed!')
+
+                    print('Deleting source directory after installation')
+                    os.chdir(src_directory)
+                    remove_command = ['rm', '-r', package_directory]
+                    subprocess.run(remove_command)
+
+                    break
+
+
+if __name__ == '__main__':
+    main()
