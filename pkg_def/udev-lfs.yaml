@@ -1,0 +1,14 @@
+name: "udev-lfs"
+version: "20230818"
+url: "https://anduin.linuxfromscratch.org/LFS/udev-lfs-20230818.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

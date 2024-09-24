@@ -1,0 +1,18 @@
+name: "readline"
+version: "8.2"
+url: "https://ftp.gnu.org/gnu/readline/readline-8.2.tar.gz"
+patch:
+  - "patch -Np1 -i /usr/src/readline-8.2-upstream_fixes-3.patch"
+preinstall:
+  - "sed -i '/MV.*old/d' Makefile.in"
+  - "sed -i '/{OLDSUFF}/c:' support/shlib-install"
+configure: "./configure --prefix=/usr --disable-static --with-curses --docdir=/usr/share/doc/readline-8.2"
+build: "make SHLIB_LIBS=\"-lncursesw\""
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make SHLIB_LIBS=\"-lncursesw\" install"
+postinstall:
+  - "install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.2"
+uninstall: SKIP
+deps: SKIP

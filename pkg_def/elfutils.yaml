@@ -1,0 +1,16 @@
+name: "elfutils"
+version: "0.190"
+url: "https://sourceware.org/ftp/elfutils/0.190/elfutils-0.190.tar.bz2"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-debuginfod --enable-libdebuginfod=dummy"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make -C libelf install"
+postinstall:
+  - "install -vm644 config/libelf.pc /usr/lib/pkgconfig"
+  - "rm /usr/lib/libelf.a"
+uninstall: SKIP
+deps: SKIP

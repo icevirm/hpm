@@ -1,0 +1,15 @@
+name: "inetutils"
+version: "2.5"
+url: "https://ftp.gnu.org/gnu/inetutils/inetutils-2.5.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --bindir=/usr/bin --localstatedir=/var --disable-logger --disable-whois --disable-rcp --disable-rexec --disable-rlogin --disable-rsh --disable-servers"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "mv -v /usr/{,s}bin/ifconfig"
+uninstall: SKIP
+deps: SKIP

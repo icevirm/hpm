@@ -1,0 +1,16 @@
+name: "sysklogd"
+version: "1.5.1"
+url: "https://www.infodrom.org/projects/sysklogd/download/sysklogd-1.5.1.tar.gz"
+patch: SKIP
+preinstall:
+  - "sed -i '/Error loading kernel symbols/{n;n;d}' ksym_mod.c"
+  - "sed -i 's/union wait/int/' syslogd.c"
+configure: SKIP
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make BINDIR=/sbin install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

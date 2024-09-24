@@ -5,11 +5,9 @@ import os
 import subprocess
 
 from sqlite3 import connect, Error
-from yaml import safe_load
 
 HPM_DB = os.getenv('HPM_DB')
-SRC_DIR = os.getenv('HPM_SRC_DIR')
-PKG_DEF_DIR = os.getenv('HPM_PKG_DEF_DIR')
+SRC_DIR = '/usr/src'
 
 
 def get_package(target: str):
@@ -19,9 +17,53 @@ def get_package(target: str):
     Args:
         target: str - target package
     '''
-    filename = f'{PKG_DEF_DIR}/{target}.yaml'
-    with open(filename, 'r') as package_file:
-        package_struct = safe_load(package_file)
+    try:
+        conn = connect(HPM_DB)
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM package_installation WHERE name = ?',
+                    (target,))
+        row = cursor.fetchone()
+
+        if row is None:
+            print('Package instructions not found')
+            return
+
+        package_struct = {
+            'name': row[0],
+            'version': row[1],
+            'patch': row[2],
+            'preinstall': row[3],
+            'configure': row[4],
+            'prebuild': row[5],
+            'build': row[6],
+            'postbuild': row[7],
+            'test': row[8],
+            'posttest': row[9],
+            'install': row[10],
+            'postinstall': row[11],
+            'uninstall': row[12]
+        }
+
+        cursor.execute('SELECT url FROM package_info WHERE name = ? AND version = ?',
+                       (package_struct['name'], package_struct['version'],))
+
+        info_row = cursor.fetchone()
+
+        if info_row is None:
+            print('Package information not found')
+            return
+
+        package_struct['url'] = info_row[0]
+
+    except Error as err:
+        print(f'An error occured: {err}')
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
     return package_struct
 
@@ -57,32 +99,6 @@ def list_packages(installed: bool):
             conn.close()
 
 
-def update_database(package: dict):
-    '''
-    This function adds new entry into the database after the package is intstalled
-
-    Args:
-        package: dict - package to install
-    '''
-    try:
-        conn = connect(HPM_DB)
-        cursor = conn.cursor()
-
-        cursor.execute('''
-            INSERT OR REPLACE INTO package_info (name, version, url, installed) VALUES (?, ?, ?, ?)
-            ''', (package['name'], package['version'], package['url'], 'yes'))
-
-        conn.commit()
-    except Error as err:
-        print(f'An error occured: {err}')
-
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
-
 def get_package_filename(package: dict):
     '''
     This function extracts archive name and filename from package URL
@@ -94,11 +110,7 @@ def get_package_filename(package: dict):
     archive_filename = os.path.basename(url)
 
     # TODO: It works only with tarballs, change it to support any file
-    # TCL has different archive names and directory inside
-    if package['name'] == 'tcl':
-        package_dirname = f'{package["name"]}{package["version"]}'
-    else:
-        package_dirname = archive_filename.split('.tar')[0]
+    package_dirname = archive_filename.split('.tar')[0]
 
     return archive_filename, package_dirname
 
@@ -112,7 +124,7 @@ def download_package(package: dict):
     '''
     url = package['url']
 
-    subprocess.run(['wget', '-nc', '-P', SRC_DIR, url])
+    subprocess.run(['wget', '--no-check-certificate', '-nc', '-P', SRC_DIR, url])
 
 
 def unpack_package(package: dict):
@@ -139,11 +151,11 @@ def patch_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    patches = [patch for patch in package['patch'] if patch]
+    patches = [patch for patch in package['patch'].split('@@') if patch]
 
     for patch in patches:
         print(f'Patching {package["name"]} with {patch}...')
-        subprocess.run(patch, shell=True)
+        subprocess.run(['patch', '-Np1', '-i', f'{SRC_DIR}/{patch}'])
 
 
 def preinstall_package(package: dict):
@@ -153,9 +165,15 @@ def preinstall_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    preinstall_scripts = [preinst for preinst in package['preinstall'] if preinst]
+    preinstall_scripts = [preinst for preinst in package['preinstall'].split('@@') if preinst]
 
     # List of exceptions: enter a separate build folder first
+    if package['name'] in ['glibc', 'dejagnu', 'binutils', 'gcc', 'e2fsprogs']:
+        os.mkdir('build')
+        os.chdir('build')
+    elif package['name'] in ['tcl']:
+        os.chdir('unix')
+
     for preinstall_script in preinstall_scripts:
         print(f'Running preinstall script {preinstall_script}...')
         subprocess.run(preinstall_script, shell=True)
@@ -168,11 +186,29 @@ def configure_package(package: dict):
     Args:
         package: dict - package struct
     '''
+    if package['configure'] == 'DEFAULT':
+        configure_command = ['./configure', '--prefix=/usr']
     # List of exceptions: packages use separate folder to build
-    configure_command = package['configure']
+    elif package['name'] in ['glibc', 'dejagnu', 'binutils', 'gcc', 'e2fsprogs']:
+        configure_command = ['../configure'] + package['configure'].split()
+    else:
+        configure_command = ['./configure'] + package['configure'].split()
 
     print(f'Configuring the package with config options: {configure_command}...')
-    subprocess.run(configure_command, shell=True)
+    subprocess.run(configure_command)
+
+def prebuild_package(package: dict):
+    '''
+    This function runs prebuild scripts for the package
+
+    Args:
+        package: dict - package struct
+    '''
+    prebuild_scripts = [prebuild for prebuild in package['prebuild'].split('@@') if prebuild]
+
+    for prebuild_script in prebuild_scripts:
+        print(f'Running prebuild script {prebuild_script}...')
+        subprocess.run(prebuild_script, shell=True)
 
 
 def build_package(package: dict):
@@ -182,10 +218,13 @@ def build_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    build_command = package['build']
+    if package['build'] == 'DEFAULT':
+        build_command = ['make']
+    else:
+        build_command = ['make'] + package['build'].split()
 
     print(f'Building the package with options: {build_command}...')
-    subprocess.run(build_command, shell=True)
+    subprocess.run(build_command)
 
 
 def postbuild_package(package: dict):
@@ -195,7 +234,7 @@ def postbuild_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    postbuild_scripts = [postbuild for postbuild in package['postbuild'] if postbuild]
+    postbuild_scripts = [postbuild for postbuild in package['postbuild'].split('@@') if postbuild]
 
     for postbuild_script in postbuild_scripts:
         print(f'Running postbuild script {postbuild_script}...')
@@ -209,10 +248,13 @@ def test_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    test_command = package['test']
+    if package['test'] == 'DEFAULT':
+        test_command = ['make', 'check']
+    else:
+        test_command = ['make'] + package['test'].split()
 
     print(f'Testing the package with options: {test_command}...')
-    subprocess.run(test_command, shell=True)
+    subprocess.run(test_command)
 
 
 def posttest_package(package: dict):
@@ -222,7 +264,7 @@ def posttest_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    posttest_scripts = [posttest for posttest in package['posttest'] if posttest]
+    posttest_scripts = [posttest for posttest in package['posttest'].split('@@') if posttest]
 
     for posttest_script in posttest_scripts:
         print(f'Running post test script {posttest_script}...')
@@ -236,12 +278,13 @@ def install_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    install_command = package['install']
+    if package['install'] == 'DEFAULT':
+        install_command = ['make', 'install']
+    else:
+        install_command = ['make'] + package['install'].split() + ['install']
 
     print(f'Installing the package with options: {install_command}...')
-    subprocess.run(install_command, shell=True)
-
-    update_database(package)
+    subprocess.run(install_command)
 
 
 def postinstall_package(package: dict):
@@ -251,7 +294,7 @@ def postinstall_package(package: dict):
     Args:
         package: dict - package struct
     '''
-    postinstall_scripts = [postinstall for postinstall in package['postinstall'] if postinstall]
+    postinstall_scripts = [postinstall for postinstall in package['postinstall'].split('@@') if postinstall]
 
     for postinstall_script in postinstall_scripts:
         print(f'Running postinstall script {postinstall_script}...')
@@ -293,6 +336,8 @@ def full_install(package: dict):
         preinstall_package(package)
     if package['configure'] != 'SKIP':
         configure_package(package)
+    if package['prebuild'] != 'SKIP':
+        prebuild_package(package)
     if package['build'] != 'SKIP':
         build_package(package)
     if package['postbuild'] != 'SKIP':
@@ -359,7 +404,6 @@ def main():
 
     Args:
         -i, --install: Full installation
-        TODO: add other keys
     '''
     description = 'This tool helps to manage packages in custom LFS installation'
 

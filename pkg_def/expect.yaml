@@ -1,0 +1,15 @@
+name: "expect"
+version: "5.45.4"
+url: "https://prdownloads.sourceforge.net/expect/expect5.45.4.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --with-tcl=/usr/lib --enable-shared --mandir=/usr/share/man --with-tclinclude=/usr/include"
+build: "make"
+postbuild: SKIP
+test: "make test"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib"
+uninstall: SKIP
+deps: SKIP

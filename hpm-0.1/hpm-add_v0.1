@@ -1,0 +1,123 @@
+#!/usr/bin/env python3
+
+from sqlite3 import connect, Error
+
+HPM_DB = 'packages.db'
+
+
+def add_package(package: dict):
+    '''
+    This function adds a package into the database.
+
+    Args:
+        package: dict - package struct
+    '''
+    try:
+        conn = connect(HPM_DB)
+        cursor = conn.cursor()
+
+        cursor.execute('INSERT OR REPLACE INTO package_info (name, version, url) VALUES (?, ?, ?)', (package['name'], package['version'], package['url']))
+
+        cursor.execute('''
+            INSERT OR REPLACE INTO package_installation (name, version, patch, preinstall, configure, prebuild, build, postbuild, test, posttest, install, postinstall, uninstall) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (package['name'], package['version'], package['patch'], package['preinstall'], package['configure'], package['prebuild'], package['build'], package['postbuild'], package['test'], package['posttest'], package['install'], package['postinstall'], package['uninstall']))
+
+        conn.commit()
+
+        print(f'Successfully added {package["name"]}-{package["version"]} into HPM database.')
+
+    except Error as err:
+        print(f'An error occured: {err}')
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+
+def main():
+    '''
+    This module adds a package into HPM DB.
+    If a parameter is not provided, SKIP will be added to the corresponding field.
+
+    DEFAULT value is special and determines common parameters for different steps,
+    e.g. if configure == DEFAULT, ./configure --prefix=/usr will be executed.
+    '''
+    print('Enter information about package.')
+
+    name = input('Enter the name: ')
+    version = input('Enter version: ')
+    if not (name and version):
+        print('Impossible to add a package without name and version!')
+        return
+
+    url = input('Enter URL of source: ')
+
+    patch = input('Enter names of the patches divided by @@: ')
+    if not patch:
+        patch = 'SKIP'
+
+    preinstall = input('Enter preinstall scripts divided by @@: ')
+    if not preinstall:
+        preinstall = 'SKIP'
+
+    configure = input('Enter parameters to configure script: ')
+    if not configure:
+        configure = 'SKIP'
+
+    prebuild = input('Enter scripts to run before build divided by @@: ')
+    if not prebuild:
+        prebuild = 'SKIP'
+
+    build = input('Enter parameters to make command: ')
+    if not build:
+        build = 'SKIP'
+
+    postbuild = input('Enter scripts to run after build and before test divided by @@: ')
+    if not postbuild:
+        postbuild = 'SKIP'
+
+    test = input('Enter parameters to make check command: ')
+    if not test:
+        test = 'SKIP'
+
+    posttest = input('Enter scripts to run after test and before install divided by @@: ')
+    if not posttest:
+        posttest = 'SKIP'
+
+    install = input('Enter parameters to make install command: ')
+    if not install:
+        install = 'SKIP'
+
+    postinstall = input('Enter postinstall scripts divided by @@: ')
+    if not postinstall:
+        postinstall = 'SKIP'
+
+    uninstall = input('Enter uninstallation instructions divided by @@: ')
+    if not uninstall:
+        uninstall = 'DEFAULT'
+
+    package = {
+        'name': name,
+        'version': version,
+        'url': url,
+        'patch': patch,
+        'preinstall': preinstall,
+        'configure': configure,
+        'prebuild': prebuild,
+        'build': build,
+        'postbuild': postbuild,
+        'test': test,
+        'posttest': posttest,
+        'install': install,
+        'postinstall': postinstall,
+        'uninstall': uninstall
+    }
+
+    add_package(package)
+
+
+if __name__ == '__main__':
+    main()
+

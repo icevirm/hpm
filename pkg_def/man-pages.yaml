@@ -1,0 +1,14 @@
+name: "man-pages"
+version: "6.06"
+url: "https://www.kernel.org/pub/linux/docs/man-pages/man-pages-6.06.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,17 @@
+name: "openssl"
+version: "3.2.1"
+url: "https://www.openssl.org/source/openssl-3.2.1.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic"
+build: "make"
+postbuild: SKIP
+test: "HARNESS_JOBS=$(nproc) make test"
+posttest: 
+  - "sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile"
+install: "make MANSUFFIX=ssl install"
+postinstall:
+  - "mv -v /usr/share/doc/openssl /usr/share/doc/openssl-3.2.1"
+  - "cp -vfr doc/* /usr/share/doc/openssl-3.2.1"
+uninstall: SKIP
+deps: SKIP

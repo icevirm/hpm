@@ -1,0 +1,15 @@
+name: "libcap"
+version: "2.69"
+url: "https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.69.tar.xz"
+patch: SKIP
+preinstall:
+  - "sed -i '/install -m.*STA/d' libcap/Makefile"
+configure: SKIP
+build: "make prefix=/usr lib=lib"
+postbuild: SKIP
+test: "make test"
+posttest: SKIP
+install: "make prefix=/usr lib=lib install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

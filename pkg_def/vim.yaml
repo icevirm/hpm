@@ -1,0 +1,18 @@
+name: "vim"
+version: "9.1.0041"
+url: "https://github.com/vim/vim/archive/v9.1.0041/vim-9.1.0041.tar.gz"
+patch: SKIP
+preinstall:
+  - "echo '#define SYS_VIMRC_FILE \"/etc/vimrc\"' >> src/feature.h"
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "chown -R tester . && su tester -c \"TERM=xterm-256color LANG=en_US.UTF-8 make -j1 test\" &> vim-test.log"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "ln -sv vim /usr/bin/vi"
+  - "for L in  /usr/share/man/{,*/}man1/vim.1; do ln -sv vim.1 $(dirname $L)/vi.1; done"
+  - "ln -sv ../vim/vim91/doc /usr/share/doc/vim-9.1.0041"
+uninstall: SKIP
+deps: SKIP

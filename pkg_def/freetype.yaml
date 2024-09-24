@@ -1,0 +1,19 @@
+name: "freetype"
+version: "2.13.2"
+url: "https://downloads.sourceforge.net/freetype/freetype-2.13.2.tar.xz"
+patch: SKIP
+preinstall:
+  - "tar -xf ../freetype-doc-2.13.2.tar.xz --strip-components=2 -C docs"
+  - "sed -ri 's:.*(AUX_MODULES.*valid):\1:' modules.cfg"
+  - "sed -r 's:.*(#.*SUBPIXEL_RENDERING) .*:\1:' -i include/freetype/config/ftoption.h"
+configure: "./configure --prefix=/usr --enable-freetype-config --disable-static"
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "cp -v -R docs -T /usr/share/doc/freetype-2.13.2"
+  - "rm -v /usr/share/doc/freetype-2.13.2/freetype-config.1"
+uninstall: SKIP
+deps: SKIP

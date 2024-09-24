@@ -1,0 +1,14 @@
+name: "m4"
+version: "1.4.19"
+url: "https://ftp.gnu.org/gnu/m4/m4-1.4.19.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

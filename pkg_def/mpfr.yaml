@@ -1,0 +1,16 @@
+name: "mpfr"
+version: "4.2.1"
+url: "https://ftp.gnu.org/gnu/mpfr/mpfr-4.2.1.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr-4.2.1"
+build: "make"
+postbuild:
+  - "make html"
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "make install-html"
+uninstall: SKIP
+deps: SKIP

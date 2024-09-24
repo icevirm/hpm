@@ -1,0 +1,14 @@
+name: "linux"
+version: "6.7.4"
+url: "https://www.kernel.org/pub/linux/kernel/v6.x/linux-6.7.4.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

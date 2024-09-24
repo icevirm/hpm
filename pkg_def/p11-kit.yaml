@@ -1,0 +1,22 @@
+name: "p11-kit"
+version: "0.25.3"
+url: "https://github.com/p11-glue/p11-kit/releases/download/0.25.3/p11-kit-0.25.3.tar.xz"
+patch: SKIP
+preinstall:
+  - "sed '20,$ d' -i trust/trust-extract-compat"
+  - "echo \"# Copy existing anchor modifications to /etc/ssl/local\" >> trust/trust-extract-compat"
+  - "echo \"/usr/libexec/make-ca/copy-trust-modifications\" >> trust/trust-extract-compat"
+  - "echo \"# Update trust stores\" >> trust/trust-extract-compat"
+  - "echo \"/usr/sbin/make-ca -r\" >> trust/trust-extract-compat"
+  - "mkdir p11-build"
+configure: "cd p11-build && meson setup .. --prefix=/usr --buildtype=release -Dtrust_paths=/etc/pki/anchors" 
+build: "cd p11-build && ninja"
+postbuild: SKIP
+test: "cd p11-build && LC_ALL=C ninja test"
+posttest: SKIP
+install: "cd p11-build && ninja install"
+postinstall:
+  - "ln -svf /usr/libexec/p11-kit/trust-extract-compat /usr/bin/update-ca-certificates"
+  - "cd p11-build && ln -svf ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so"
+uninstall: SKIP
+deps: SKIP

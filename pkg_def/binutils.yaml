@@ -1,0 +1,16 @@
+name: "binutils"
+version: "2.42"
+url: "https://sourceware.org/pub/binutils/releases/binutils-2.42.tar.xz"
+patch: SKIP
+preinstall:
+  - "mkdir build"
+configure: "cd build && ../configure --prefix=/usr --sysconfdir=/etc --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --enable-64-bit-bfd --with-system-zlib --enable-default-hash-style=gnu"
+build: "cd build && make tooldir=/usr"
+postbuild: SKIP
+test: "cd build && make -k check"
+posttest: SKIP
+install: "cd build && make tooldir=/usr install"
+postinstall:
+  - "rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a"
+uninstall: SKIP
+deps: SKIP

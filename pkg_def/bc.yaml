@@ -1,0 +1,14 @@
+name: "bc"
+version: "6.7.5"
+url: "https://github.com/gavinhoward/bc/releases/download/6.7.5/bc-6.7.5.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "CC=gcc ./configure --prefix=/usr -G -O3 -r"
+build: "make"
+postbuild: SKIP
+test: "make test"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

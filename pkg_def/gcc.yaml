@@ -1,0 +1,25 @@
+name: "gcc"
+version: "13.2.0"
+url: "https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz"
+patch: SKIP
+preinstall:
+  - "mkdir build"
+  - "sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64"
+configure: "cd build && ../configure --prefix=/usr LD=ld --enable-languages=c,c++ --enable-default-pie --enable-default-ssp --disable-multilib --disable-bootstrap --disable-fixincludes --with-system-zlib"
+build: "cd build && make"
+postbuild:
+  - "ulimit -s 32768"
+test: "cd build && chown -R tester . && su tester -c \"PATH=$PATH make -k check\" && ../contrib/test_summary | grep -A7 Summ"
+posttest: SKIP
+install: "cd build && make install"
+postinstall:
+  - "chown -v -R root:root /usr/lib/gcc/$(gcc -dumpmachine)/13.2.0/include{,-fixed}"
+  - "ln -svr /usr/bin/cpp /usr/lib"
+  - "ln -sv gcc.1 /usr/share/man/man1/cc.1"
+  - "ln -sfv ../../libexec/gcc/$(gcc -dumpmachine)/13.2.0/liblto_plugin.so /usr/lib/bfd-plugins/"
+  - "mkdir -pv /usr/share/gdb/auto-load/usr/lib"
+  - "mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib"
+  - "mv -v /usr/lib64/lib* /usr/lib/"
+  - "rm -rf /usr/lib64"
+uninstall: SKIP
+deps: SKIP

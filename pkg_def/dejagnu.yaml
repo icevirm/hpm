@@ -1,0 +1,19 @@
+name: "dejagnu"
+version: "1.6.3"
+url: "https://ftp.gnu.org/gnu/dejagnu/dejagnu-1.6.3.tar.gz"
+patch: SKIP
+preinstall:
+  - "mkdir build"
+configure: "cd build && ../configure --prefix=/usr"
+build: SKIP
+postbuild:
+  - "cd build && makeinfo --html --no-split -o doc/dejagnu.html ../doc/dejagnu.texi"
+  - "cd build && makeinfo --plaintext -o doc/dejagnu.txt ../doc/dejagnu.texi"
+test: "cd build && make check"
+posttest: SKIP
+install: "cd build && make install"
+postinstall:
+  - "install -v -dm755 /usr/share/doc/dejagnu-1.6.3"
+  - "cd build && install -v -m644 doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-1.6.3"
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,15 @@
+name: "libtasn1"
+version: "4.19.0"
+url: "https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.19.0.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "--prefix=/usr --disable-static"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "make -C doc/reference install-data-local"
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,16 @@
+name: "libffi"
+version: "3.4.4"
+url: "https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --with-gcc-arch=native"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "mv -v /usr/lib64/libffi.* /usr/lib/"
+  - "rm -rf /usr/lib64"
+uninstall: SKIP
+deps: SKIP

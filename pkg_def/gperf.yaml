@@ -1,0 +1,14 @@
+name: "gperf"
+version: "3.1"
+url: "https://ftp.gnu.org/gnu/gperf/gperf-3.1.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --docdir=/usr/share/doc/gperf-3.1"
+build: "make"
+postbuild: SKIP
+test: "make -j1 check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

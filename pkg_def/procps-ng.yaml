@@ -1,0 +1,14 @@
+name: "procps-ng"
+version: "4.0.4"
+url: "https://sourceforge.net/projects/procps-ng/files/Production/procps-ng-4.0.4.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --docdir=/usr/share/doc/procps-ng-4.0.4 --disable-static --disable-kill"
+build: "make"
+postbuild: SKIP
+test: "make -k check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

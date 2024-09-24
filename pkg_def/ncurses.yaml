@@ -1,0 +1,21 @@
+name: "ncurses"
+version: "6.4-20230520"
+url: "https://anduin.linuxfromscratch.org/LFS/ncurses-6.4-20230520.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --mandir=/usr/share/man --with-shared --without-debug --without-normal --with-cxx-shared --enable-pc-files --enable-widec --with-pkg-config-libdir=/usr/lib/pkgconfig"
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make DESTDIR=$PWD/dest install"
+postinstall:
+  - "install -vm755 dest/usr/lib/libncursesw.so.6.4 /usr/lib"
+  - "rm -v dest/usr/lib/libncursesw.so.6.4"
+  - "sed -e 's/^#if.*XOPEN.*$/#if 1/' -i dest/usr/include/curses.h"
+  - "cp -av dest/* /"
+  - "for lib in ncurses form panel menu; do ln -svf lib${lib}w.so /usr/lib/lib${lib}.so; ln -svf ${lib}w.pc /usr/lib/pkgconfig/${lib}.pc; done"
+  - "ln -svf libncursesw.so /usr/lib/libcurses.so"
+  - "cp -v -R doc -T /usr/share/doc/ncurses-6.4-20230520"
+uninstall: SKIP
+deps: SKIP

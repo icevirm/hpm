@@ -1,0 +1,14 @@
+name: "patch"
+version: "2.7.6"
+url: "https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

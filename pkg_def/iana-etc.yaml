@@ -1,0 +1,14 @@
+name: "iana-etc"
+version: "20240125"
+url: "https://github.com/Mic92/iana-etc/releases/download/20240125/iana-etc-20240125.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: SKIP
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "cp services protocols /etc"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

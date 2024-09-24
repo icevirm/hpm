@@ -1,0 +1,14 @@
+name: "findutils"
+version: "4.9.0"
+url: "https://ftp.gnu.org/gnu/findutils/findutils-4.9.0.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --localstatedir=/var/lib/locate"
+build: "make"
+postbuild: SKIP
+test: "chown -R tester . && su tester -c \"PATH=$PATH make check\""
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

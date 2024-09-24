@@ -1,0 +1,14 @@
+name: "lfs-bootscripts"
+version: "20230728"
+url: "https://www.linuxfromscratch.org/lfs/downloads/12.1/lfs-bootscripts-20230728.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: SKIP
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

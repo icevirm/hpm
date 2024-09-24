@@ -1,0 +1,2 @@
+This version of hpm uses sqlite3 database to store package configuration commands.
+

@@ -1,0 +1,14 @@
+name: "wget"
+version: "1.21.4"
+url: "https://ftp.gnu.org/gnu/wget/wget-1.21.4.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --sysconfdir=/etc --with-ssl=openssl --without-libpsl"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

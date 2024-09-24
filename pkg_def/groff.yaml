@@ -1,0 +1,14 @@
+name: "groff"
+version: "1.23.0"
+url: "https://ftp.gnu.org/gnu/groff/groff-1.23.0.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "PAGE=A4 ./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

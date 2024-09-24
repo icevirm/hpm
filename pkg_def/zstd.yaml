@@ -1,0 +1,15 @@
+name: "zstd"
+version: "1.5.5"
+url: "https://github.com/facebook/zstd/releases/download/v1.5.5/zstd-1.5.5.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: "make prefix=/usr"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make prefix=/usr install"
+postinstall:
+  - "rm -v /usr/lib/libzstd.a"
+uninstall: SKIP
+deps: SKIP

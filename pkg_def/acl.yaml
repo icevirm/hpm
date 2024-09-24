@@ -1,0 +1,14 @@
+name: "acl"
+version: "2.3.2"
+url: "https://download.savannah.gnu.org/releases/acl/acl-2.3.2.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/acl-2.3.2"
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

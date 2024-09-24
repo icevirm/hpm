@@ -1,0 +1,14 @@
+name: "sqlite-autoconf"
+version: "3450100"
+url: "https://sqlite.org/2024/sqlite-autoconf-3450100.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --enable-fts{4,5} CPPFLAGS=\"-DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_SECURE_DELETE=1 -DQSLITE_ENABLE_FTS3_TOKENIZER=1\""
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

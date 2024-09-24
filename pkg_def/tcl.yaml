@@ -1,0 +1,24 @@
+name: "tcl"
+version: "8.6.13"
+url: "https://downloads.sourceforge.net/tcl/tcl8.6.13-src.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "cd unix && ./configure --prefix=/usr --mandir=/usr/share/man"
+build: "cd unix && make"
+postbuild:
+  - "SRCDIR=$(pwd | awk -F '/' '{for(i=1; i<NF; i++) printf \"%s%s\", $i, (i<NF-1 ? \"/\" : \"\"); print \"\"}') sed -e \"s@$SRCDIR/unix@/usr/lib@\" -e \"s@$SRCDIR@/usr/include@\" -i tclConfig.sh"
+  - "SRCDIR=$(pwd | awk -F '/' '{for(i=1; i<NF; i++) printf \"%s%s\", $i, (i<NF-1 ? \"/\" : \"\"); print \"\"}') sed -e \"s@$SRCDIR/unix/pkgs/tdbc1.1.5@/usr/lib/tdbc1.1.5@\" -e \"s@$SRCDIR/pkgs/tdbc1.1.5/generic@/usr/include@\" -e \"s@$SRCDIR/pkgs/tdbc1.1.5/library@/usr/lib/tcl8.6@\" -e \"s@$SRCDIR/pkgs/tdbc1.1.5@/usr/include@\" -i pkgs/tdbc1.1.5/tdbcConfig.sh"
+  - "SRCDIR=$(pwd | awk -F '/' '{for(i=1; i<NF; i++) printf \"%s%s\", $i, (i<NF-1 ? \"/\" : \"\"); print \"\"}') sed -e \"s@$SRCDIR/unix/pkgs/itcl4.2.3@/usr/lib/itcl4.2.3@\" -e \"s@$SRCDIR/pkgs/itcl4.2.3/generic@/usr/include@\" -e \"s@$SRCDIR/pkgs/itcl4.2.3@/usr/include@\" -i pkgs/itcl4.2.3/itclConfig.sh"
+test: "cd unix && make test"
+posttest: SKIP
+install: "cd unix && make install"
+postinstall:
+  - "chmod -v u+w /usr/lib/libtcl8.6.so"
+  - "cd unix && make install-private-headers"
+  - "ln -svf tclsh8.6 /usr/bin/tclsh"
+  - "mv /usr/share/man/man3/{Thread,Tcl_Thread}.3"
+  - "cd unix && tar -xf ../../tcl-doc8.6.13.tar.gz --strip-components=1"
+  - "mkdir -pv /usr/share/doc/tcl-8.6.13"
+  - "cd unix && cp -rv ./html/* /usr/share/doc/tcl-8.6.13"
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,15 @@
+name: "make-ca"
+version: "1.13"
+url: "https://github.com/lfs-book/make-ca/releases/download/v1.13/make-ca-1.13.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: SKIP
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "install -vdm755 /etc/ssl/local && /usr/sbin/make-ca -g"
+uninstall: SKIP
+deps: SKIP

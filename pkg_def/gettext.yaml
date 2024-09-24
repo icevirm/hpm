@@ -1,0 +1,15 @@
+name: "gettext"
+version: "0.22.4"
+url: "https://ftp.gnu.org/gnu/gettext/gettext-0.22.4.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/gettext-0.22.4"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "chmod -v 0755 /usr/lib/preloadable_libintl.so"
+uninstall: SKIP
+deps: SKIP

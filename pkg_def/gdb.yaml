@@ -1,0 +1,15 @@
+name: "gdb"
+version: "14.1"
+url: "https://ftp.gnu.org/gnu/gdb/gdb-14.1.tar.xz"
+patch: SKIP
+preinstall:
+  - "mkdir build"
+configure: "cd build && ../configure --prefix=/usr --with-system-readline --with-python=/usr/bin/python3"
+build: "cd build && make"
+postbuild: SKIP
+test: "cd build && pushd gdb/testsuite && make site.exp && echo \"set gdb_test_timeout 120\" >> site.exp && runtest && popd"
+posttest: SKIP
+install: "cd build && make -C gdb install && make -C gdbserver install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,14 @@
+name: "efibootmgr"
+version: "18"
+url: "https://github.com/rhboot/efibootmgr/archive/18/efibootmgr-18.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: "make EFIDIR=LFS EFI_LOADER=grubx64.efi"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make EFIDIR=LFS install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

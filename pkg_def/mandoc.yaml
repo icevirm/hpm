@@ -1,0 +1,16 @@
+name: "mandoc"
+version: "1.14.6"
+url: "https://mandoc.bsd.lv/snapshots/mandoc-1.14.6.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure"
+build: "make mandoc"
+postbuild: SKIP
+test: "make regress"
+posttest: SKIP
+install: SKIP
+postinstall:
+  - "install -vm755 mandoc /usr/bin"
+  - "install -vm644 mandoc.1 /usr/share/man/man1"
+uninstall: SKIP
+deps: SKIP

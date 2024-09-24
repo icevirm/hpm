@@ -1,0 +1,17 @@
+name: "sed"
+version: "4.9"
+url: "https://ftp.gnu.org/gnu/sed/sed-4.9.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild:
+  - "make html"
+test: "chown -R tester . && su tester -c \"PATH=$PATH make check\""
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "install -d -m755 /usr/share/doc/sed-4.9"
+  - "install -m644 doc/sed.html /usr/share/doc/sed-4.9"
+uninstall: SKIP
+deps: SKIP

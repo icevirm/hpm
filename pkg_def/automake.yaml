@@ -1,0 +1,14 @@
+name: "automake"
+version: "1.16.5"
+url: "https://ftp.gnu.org/gnu/automake/automake-1.16.5.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --docdir=/usr/share/doc/automake-1.16.5"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

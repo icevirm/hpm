@@ -1,0 +1,14 @@
+name: ""
+version: ""
+url: ""
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: SKIP
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: SKIP
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,14 @@
+name: "libunistring"
+version: "1.1"
+url: "https://ftp.gnu.org/gnu/libunistring/libunistring-1.1.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/libunistring-1.1"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install": "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,16 @@
+name: "wpa_supplicant"
+version: "2.10"
+url: "https://w1.fi/releases.wpa_supplicant-2.10.tar.gz"
+patch:
+  - "patch -Np1 -i /usr/src/wpa_supplicant-2.10-security_fix-1.patch"
+preinstall:
+  - "cd wpa_supplicant && echo \"CONFIG_BACKEND=file\" > .config && echo \"CONFIG_CTRL_IFACE=y\" >> .config &&  echo \"CONFIG_DEBUG_FILE=y\" >> .config && echo \"CONFIG_DEBUG_SYSLOG=y\" >> .config && echo \"CONFIG_DEBUG_SYSLOG_FACILITY=LOG_DAEMON\" >> .config && echo \"CONFIG_DRIVER_NL80211=y\" >> .config && echo \"CONFIG_READLINE=y\" >> .config && echo \"CONFIG_LIBNL32=y\" >> .config && echo \"CFLAGS += -I/usr/include/libnl3\" >> .config"
+configure: SKIP
+build: "cd wpa_supplicant && make BINDIR=/usr/sbin LIBDIR=/usr/lib"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "cd wpa_supplicant && install -v -m755 wpa_{cli,passphrase,supplicant} /usr/sbin && install -v -m644 doc/docbook/wpa_supplicant.conf.5 /usr/share/man/man5/ && install -v -m644 doc/docbook/wpa_{cli,passphrase,supplicant}.8 /usr/share/man/man8/"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

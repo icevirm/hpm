@@ -1,0 +1,14 @@
+name: "pyyaml"
+version: "6.0.2"
+url: "https://pypi.org/packages/source/p/pyyaml/pyyaml-6.0.2.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: "pip3 wheel -w dist --no-cache-dir --no-build-isolation --no-deps $PWD"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "pip3 install --no-index --find-links dist pyyaml"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

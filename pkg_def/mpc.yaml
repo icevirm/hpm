@@ -1,0 +1,16 @@
+name: "mpc"
+version: "1.3.1"
+url: "https://ftp.gnu.org/gnu/mpc/mpc-1.3.1.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/mpc-1.3.1"
+build: "make"
+postbuild:
+  - "make html"
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "make install-html"
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,14 @@
+name: "less"
+version: "643"
+url: "https://www.greenwoodsoftware.com/less/less-643.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --sysconfdir=/etc"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

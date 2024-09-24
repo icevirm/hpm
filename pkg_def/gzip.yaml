@@ -1,0 +1,14 @@
+name: "gzip"
+version: "1.13"
+url: "https://ftp.gnu.org/gnu/gzip/gzip-1.13.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

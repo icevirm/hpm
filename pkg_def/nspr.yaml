@@ -1,0 +1,16 @@
+name: "nspr"
+version: "4.35"
+url: "https://archive.mozilla.org/pub/nspr/releases/v4.35/src/nspr-4.35.tar.gz"
+patch: SKIP
+preinstall:
+  - "cd nspr && sed -i '/^RELEASE/s|^|#|' pr/src/misc/Makefile.in"
+  - "cd nspr && sed -i 's|$(LIBRARY) ||' config/rules.mk"
+configure: "cd nspr && ./configure --prefix=/usr --with-mozilla --with-pthreads --enable-64bit"
+build: "cd nspr && make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "cd nspr && make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

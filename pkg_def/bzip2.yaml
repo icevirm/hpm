@@ -1,0 +1,24 @@
+name: "bzip2"
+version: "1.0.8"
+url: "https://www.sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
+patch:
+  - "patch -Np1 -i /usr/src/bzip2-1.0.8-install_docs-1.patch"
+preinstall:
+  - "sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile"
+  - "sed -i 's@(PREFIX)/man@(PREFIX)/share/man@g' Makefile"
+  - "make -f Makefile-libbz2_so"
+  - "make clean"
+configure: SKIP
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make PREFIX=/usr install"
+postinstall:
+  - "cp -av libbz2.so.* /usr/lib"
+  - "ln -sv libbz2.so.1.0.8 /usr/lib/libbz2.so"
+  - "cp -v bzip2-shared /usr/bin/bzip2"
+  - "for i in /usr/bin/{bzcat,bunzip2}; do ln -svf bzip2 $i; done"
+  - "rm -vf /usr/lib/libbz2.a"
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,17 @@
+name: "Python"
+version: "3.12.2"
+url: "https://www.python.org/ftp/python/3.12.2/Python-3.12.2.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --enable-shared --with-system-expat --enable-optimizations"
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "install -v -dm755 /usr/share/doc/python-3.12.2/html"
+  - "tar --no-same-owner -xvf ../python-3.12.2-docs-html.tar.bz2"
+  - "cp -R --no-preserve=mode python-3.12.2-docs-html/* /usr/share/doc/python-3.12.2/html"
+uninstall: SKIP
+deps: SKIP

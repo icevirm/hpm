@@ -1,0 +1,17 @@
+name: "gmp"
+version: "6.3.0"
+url: "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp-6.3.0"
+build: "make"
+postbuild:
+  - "make html"
+  - "make check 2>&1 | tee gmp-check-log"
+test: SKIP
+posttest: SKIP
+install: "make install"
+postinstall:
+  - "make install-html"
+uninstall: SKIP
+deps: SKIP

@@ -1,0 +1,14 @@
+name: "file"
+version: "5.45"
+url: "https://astron.com/pub/file/file-5.45.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

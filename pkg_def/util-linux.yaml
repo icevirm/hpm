@@ -1,0 +1,15 @@
+name: "util-linux"
+version: "2.39.3"
+url: "https://www.kernel.org/pub/linux/utils/util-linux/v2.39/util-linux-2.39.3.tar.xz"
+patch: SKIP
+preinstall:
+  - "sed -i '/test_mkfds/s/^/#/' tests/helpers/Makemodule.am"
+configure: "./configure --bindir=/usr/bin --libdir=/usr/lib --runstatedir=/run --sbindir=/usr/sbin --disable-chfn-chsh --disable-login --disable-nologin --disable-su --disable-setpriv --disable-runuser --disable-pylibmount --disable-static --without-python --without-systemd --without-systemdsystemunitdir ADJTIME_PATH=/var/lib/hwclock/adjtime --docdir=/usr/share/doc/util-linux-2.39.3"
+build: "make"
+postbuild: SKIP
+test: "chown -R tester . && su tester -c \"make -k check\""
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

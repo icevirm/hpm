@@ -1,0 +1,14 @@
+name: "efivar"
+version: "39"
+url: "https://github.com/rhboot/efivar/archive/39/efivar-39.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: "make"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make LIBDIR=/usr/lib install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

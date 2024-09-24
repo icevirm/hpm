@@ -1,0 +1,14 @@
+name: "tzdata"
+version: "2024a"
+url: "https://www.iana.org/time-zones/repository/releases/tzdata2024a.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr"
+build: "make"
+postbuild: SKIP
+test: "make check"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP
