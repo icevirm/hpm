@@ -1,0 +1,43 @@
+#!/bin/bash
+
+version=$1
+
+echo "Currently built versions: "
+for kernel in $(ls /boot/vmlinuz-*); do
+    basename $kernel
+done
+
+if [[ ! $version ]]; then
+    echo "Usage: install_kernel version"
+    exit 1
+fi
+
+lfs_version=$(grep -E -o VERSION=.* /etc/os-release | grep -o '[0-9.]\+')
+kernel_version=$(uname -r)
+
+echo "Installing kernel version $1"
+
+cp -v arch/x86/boot/bzImage /boot/vmlinuz-$kernel_version-lfs-$lfs_version-$version
+cp -v System.map /boot/System.map-$kernel_version-$version
+cp -v .config /boot/config-$kernel_version-$version
+
+if [[ $(grep /vmlinuz-$kernel_version-lfs-$lfs_version-$version /boot/grub/grub.cfg) ]]; then
+    echo "GRUB is configured already"
+    exit 0
+fi
+
+echo "Now updating grub.cfg"
+
+root_device=$(mount | grep -F 'on / ' | cut -d ' ' -f1)
+root_partuuid=$(blkid $root_device | grep -o PARTUUID=.* | cut -d'=' -f2 | sed 's/"//g')
+
+echo "menuentry \"GNU/Linux, Linux $kernel_version-lfs-$lfs_version-$version\" {
+    linux /vmlinuz-$kernel_version-lfs-$lfs_version-$version root=PARTUUID=$root_partuuid ro
+}
+" >> /boot/grub/grub.cfg
+
+entries=$(grep -F -c menuentry /boot/grub/grub.cfg)
+last_entry=$((entries - 1))
+
+sed "s/default=.*/default=$last_entry/" -i /boot/grub/grub.cfg
+
