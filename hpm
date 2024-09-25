@@ -57,20 +57,25 @@ def list_packages(installed: bool):
             conn.close()
 
 
-def update_database(package: dict):
+def update_database(package: dict, action: str = 'add'):
     '''
     This function adds new entry into the database after the package is intstalled
 
     Args:
         package: dict - package to install
+        action: str - action to perform
     '''
     try:
         conn = connect(HPM_DB)
         cursor = conn.cursor()
 
-        cursor.execute('''
-            INSERT OR REPLACE INTO package_info (name, version, url, installed) VALUES (?, ?, ?, ?)
-            ''', (package['name'], package['version'], package['url'], 'yes'))
+        if action == 'add':
+            cursor.execute('''
+                INSERT OR REPLACE INTO package_info (name, version, url, installed) VALUES (?, ?, ?, ?)
+                ''', (package['name'], package['version'], package['url'], 'yes'))
+        elif action == 'delete':
+            cursor.execute('DELETE FROM package_info WHERE name = ? AND version = ?',
+                           (package['name'], package['version']))
 
         conn.commit()
     except Error as err:
@@ -270,6 +275,8 @@ def uninstall_package(package: dict):
     for uninstall_script in uninstall_scripts:
         print(f'Running uninstall script {uninstall_script}...')
         subprocess.run(uninstall_script, shell=True)
+    
+    update_database(package, 'delete')
 
 
 def cleanup(package: dict):
