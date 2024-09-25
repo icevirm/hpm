@@ -258,6 +258,20 @@ def postinstall_package(package: dict):
         subprocess.run(postinstall_script, shell=True)
 
 
+def uninstall_package(package: dict):
+    '''
+    This function uninstalls the package
+
+    Args:
+        package: dict - package struct
+    '''
+    uninstall_scripts = [uninstall for uninstall in package['uninstall'] if uninstall]
+
+    for uninstall_script in uninstall_scripts:
+        print(f'Running uninstall script {uninstall_script}...')
+        subprocess.run(uninstall_script, shell=True)
+
+
 def cleanup(package: dict):
     '''
     This functions cleans everything up after installation or uninstallation
@@ -342,6 +356,59 @@ def patch_only(package: dict):
     print(f'Done! {package["name"]}-{package["version"]} successfully patched.')
 
 
+def configure_only(package: dict):
+    '''
+    This function applies patches, run preinstall scripts and configure script and then stop.
+    
+    Args:
+        package: dict - package struct
+    '''
+    unpack_package(package)
+
+    if package['patch'] != 'SKIP':
+        patch_package(package)
+    if package['preinstall'] != 'SKIP':
+        preinstall_package(package)
+    if package['configure'] != 'SKIP':
+        configure_package(package)
+
+    print(f'Done! {package["name"]}-{package["version"]} successfully configured.')
+
+
+def build_only(package: dict):
+    '''
+    This function applies patches, run preinstall scripts, configure script, build and then stop.
+    
+    Args:
+        package: dict - package struct
+    '''
+    unpack_package(package)
+
+    if package['patch'] != 'SKIP':
+        patch_package(package)
+    if package['preinstall'] != 'SKIP':
+        preinstall_package(package)
+    if package['configure'] != 'SKIP':
+        configure_package(package)
+    if package['build'] != 'SKIP':
+        build_package(package)
+
+
+def patch_only(package: dict):
+    '''
+    This function applies patches to the package and stop.
+    
+    Args:
+        package: dict - package struct
+    '''
+    unpack_package(package)
+
+    if package['patch'] != 'SKIP':
+        patch_package(package)
+
+    print(f'Done! {package["name"]}-{package["version"]} successfully patched.')
+
+
 def uninstall(package: dict):
     '''
     This function uninstall the package
@@ -349,7 +416,8 @@ def uninstall(package: dict):
     Args:
         package: dict - package struct of the package to uninstall
     '''
-    pass
+    if package['uninstall'] != 'SKIP':
+        uninstall_package(package)
 
 
 def main():
@@ -372,12 +440,15 @@ def main():
     flags.add_argument('-p', '--patch', action='store_true', help='Only patch package and stop')
     flags.add_argument('-s', '--show', action='store_true', help='Name of the package to show')
     flags.add_argument('-l', '--list', action='store_true', help='List all packages')
+    flags.add_argument('-u', '--uninstall', action='store_true', help='Uninstall package')
+    flags.add_argument('-c', '--configure', action='store_true', help='Only configure package and stop')
+    flags.add_argument('-b', '--build', action='store_true', help='Only build package and stop')
 
     args = parser.parse_args()
     
     target = args.target
 
-    if not (args.install or args.patch or args.show or args.list or args.download):
+    if not (args.install or args.patch or args.show or args.list or args.download or args.uninstall or args.configure or build):
         print('Provide at least one action')
         return
 
@@ -405,11 +476,14 @@ def main():
             download_only(package)
         elif args.patch:
             patch_only(package)
+        elif args.configure:
+            configure_only(package)
+        elif args.build:
+            build_only(package)
         elif args.show:
             print(package)
-
-        # TODO: Workflow is different for uninstall
-        #uninstall_package(package)
+        elif args.uninstall:
+            uninstall(package)
 
 
 if __name__ == '__main__':

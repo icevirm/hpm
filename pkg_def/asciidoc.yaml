@@ -11,5 +11,6 @@ test: SKIP
 posttest: SKIP
 install: "pip3 install --no-index --find-links=dist --no-cache-dir --no-user asciidoc"
 postinstall: SKIP
-uninstall: SKIP
+uninstall:
+  - "pip3 uninstall asciidoc"
 deps: SKIP
