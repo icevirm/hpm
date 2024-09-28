@@ -1,0 +1,14 @@
+name: "docbook-xml"
+version: "4.5"
+url: "https://www.docbook.org/xml/4.5/docbook-xml-4.5.zip"
+patch: SKIP
+preinstall: SKIP
+configure: SKIP
+build: SKIP
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: SKIP
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

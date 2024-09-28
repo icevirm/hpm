@@ -1,0 +1,14 @@
+name: "sudo"
+version: "1.9.15p5"
+url: "https://www.sudo.ws/dist/sudo-1.9.15p5.tar.gz"
+patch: SKIP
+preinstall: SKIP
+configure: "./configure --prefix=/usr --libexecdir=/usr/lib --with-secure-path --with-env-editor --docdir=/usr/share/doc/sudo-1.9.15p5 --with-passprompt=\"[sudo] password for %p: \""
+build: "make"
+postbuild: SKIP
+test: "env LC_ALL=C make check |& tee make-check.log"
+posttest: SKIP
+install: "make install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP

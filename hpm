@@ -4,6 +4,7 @@ import argparse
 import os
 import subprocess
 
+from re import search
 from sqlite3 import connect, Error
 from yaml import safe_load
 
@@ -90,7 +91,7 @@ def update_database(package: dict, action: str = 'add'):
 
 def get_package_filename(package: dict):
     '''
-    This function extracts archive name and filename from package URL
+    This function extracts archive name, filename and extension from package URL
 
     Args:
         package: dict - package struct
@@ -98,14 +99,16 @@ def get_package_filename(package: dict):
     url = package['url']
     archive_filename = os.path.basename(url)
 
-    # TODO: It works only with tarballs, change it to support any file
-    # TCL has different archive names and directory inside
+    extract = search(r'([\w+-]+[\d.]+)([\w.]+)', archive_filename)
+    extension = extract.group(2)
+    
+    # TCL has different archive name and archived directory name
     if package['name'] == 'tcl':
         package_dirname = f'{package["name"]}{package["version"]}'
     else:
-        package_dirname = archive_filename.split('.tar')[0]
+        package_dirname = extract.group(1).strip('.')
 
-    return archive_filename, package_dirname
+    return archive_filename, package_dirname, extension
 
 
 def download_package(package: dict):
@@ -129,10 +132,13 @@ def unpack_package(package: dict):
     '''
     os.chdir(SRC_DIR)
     
-    archive_filename, package_dirname = get_package_filename(package)
+    archive_filename, package_dirname, extension = get_package_filename(package)
     
     print(f'Unpacking {archive_filename}...')
-    subprocess.run(['tar', '-xf', archive_filename], check=True)
+    if extension == 'zip':
+        subprocess.run(f'mkdir -pv {package_dirname} && cd {package_dirname} && unzip {archive_filename}', check=True, shell=True)
+    else:
+        subprocess.run(['tar', '-xf', archive_filename], check=True)
 
     os.chdir(package_dirname)
 
