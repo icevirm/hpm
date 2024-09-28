@@ -136,7 +136,7 @@ def unpack_package(package: dict):
     
     print(f'Unpacking {archive_filename}...')
     if extension == 'zip':
-        subprocess.run(f'mkdir -pv {package_dirname} && cd {package_dirname} && unzip {archive_filename}', check=True, shell=True)
+        subprocess.run(f'mkdir -pv {package_dirname} && cd {package_dirname} && unzip ../{archive_filename}', check=True, shell=True)
     else:
         subprocess.run(['tar', '-xf', archive_filename], check=True)
 
@@ -294,7 +294,7 @@ def cleanup(package: dict):
     '''
     os.chdir(SRC_DIR)
 
-    _, package_dirname = get_package_filename(package)
+    _, package_dirname, _ = get_package_filename(package)
 
     print('Deleting source directory...')
     subprocess.run(['rm', '-rf', package_dirname])

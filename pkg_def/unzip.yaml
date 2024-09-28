@@ -1,0 +1,16 @@
+name: "unzip"
+version: "6.0"
+url: "https://downloads.sourceforge.net/infozip/unzip60.tar.gz"
+patch:
+  - "wget -nc https://www.linuxfromscratch.org/patches/blfs/12.1/unzip-6.0-consolidated_fixes-1.patch -P ${HPM_SRC_DIR}"
+  - "patch -Np1 -i ../unzip-6.0-consolidated_fixes-1.patch"
+preinstall: SKIP
+configure: SKIP
+build: "make -f unix/Makefile generic"
+postbuild: SKIP
+test: SKIP
+posttest: SKIP
+install: "make prefix=/usr MANDIR=/usr/share/man/man1 -f unix/Makefile install"
+postinstall: SKIP
+uninstall: SKIP
+deps: SKIP
