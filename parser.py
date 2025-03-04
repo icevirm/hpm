@@ -39,7 +39,7 @@ def get_package(file_path, variables):
         package_name = package_name.split('-pass')[0]
 
     package = {
-        'package_name': package_name,
+        'name': package_name,
         'version': variables[f'{package_name}-version'],
         'url': variables[f'{package_name}-url']
     }
@@ -93,6 +93,23 @@ def main():
     print(configure_commands)
     print(make_commands)
     print(install_commands)
+
+    with open(f'{package["name"]}.yaml', 'rw') as output_file:
+        output_file.write(f'name: "{package["name"]}"')
+        output_file.write(f'version: "{package["version"]}"')
+        output_file.write(f'url: "{package["url"]}"')
+        output_file.write('patch: SKIP')
+        output_file.write('preinstall: SKIP')
+        output_file.write('configure: SKIP')
+        output_file.write('build: SKIP')
+        output_file.write('postbuild: SKIP')
+        output_file.write('test: SKIP')
+        output_file.write('posttest: SKIP')
+        output_file.write('install: SKIP')
+        output_file.write('postinstall: SKIP')
+        output_file.write('uninstall: SKIP')
+        output_file.write('deps: SKIP')
+        output_file.write(f'one_line: {preinstall_commands} && {configure_commands} && {make_commands} && {install_commands}')
 
 
 if __name__ == '__main__':
