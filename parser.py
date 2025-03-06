@@ -34,11 +34,19 @@ def get_variables(ent_files):
 
 def get_package(file_path, variables):
     file_name = path.basename(file_path)
-    package_name = path.splitext(file_name)[0]
-    if '-pass' in package_name:
-        package_name = package_name.split('-pass')[0]
+    file_name = path.splitext(file_name)[0]
+    if '-pass' in file_name:
+        file_name = file_name.split('-pass')[0]
+
+    if file_name == 'libstdc++':
+        package_name = 'gcc'
+    elif file_name == 'linux-headers':
+        package_name = 'linux'
+    else:
+        package_name = file_name
 
     package = {
+        'file': file_name,
         'name': package_name,
         'version': variables[f'{package_name}-version'],
         'url': variables[f'{package_name}-url']
@@ -94,23 +102,33 @@ def main():
     print(make_commands)
     print(install_commands)
 
-    with open(f'{package["name"]}.yaml', 'rw') as output_file:
-        output_file.write(f'name: "{package["name"]}"')
-        output_file.write(f'version: "{package["version"]}"')
-        output_file.write(f'url: "{package["url"]}"')
-        output_file.write('patch: SKIP')
-        output_file.write('preinstall: SKIP')
-        output_file.write('configure: SKIP')
-        output_file.write('build: SKIP')
-        output_file.write('postbuild: SKIP')
-        output_file.write('test: SKIP')
-        output_file.write('posttest: SKIP')
-        output_file.write('install: SKIP')
-        output_file.write('postinstall: SKIP')
-        output_file.write('uninstall: SKIP')
-        output_file.write('deps: SKIP')
-        output_file.write(f'one_line: {preinstall_commands} && {configure_commands} && {make_commands} && {install_commands}')
+    with open(f'pkg_def/{package["file"]}.yaml', 'w+') as output_file:
+        output_file.write(f'name: "{package["name"]}"\n')
+        output_file.write(f'version: "{package["version"]}"\n')
+        output_file.write(f'url: "{package["url"]}"\n')
+        output_file.write('patch: SKIP\n')
+        output_file.write('preinstall: SKIP\n')
+        output_file.write('configure: SKIP\n')
+        output_file.write('build: SKIP\n')
+        output_file.write('postbuild: SKIP\n')
+        output_file.write('test: SKIP\n')
+        output_file.write('posttest: SKIP\n')
+        output_file.write('install: SKIP\n')
+        output_file.write('postinstall: SKIP\n')
+        output_file.write('uninstall: SKIP\n')
+        output_file.write('deps: SKIP\n')
+
+        if not preinstall_commands:
+            preinstall_commands = ':'
+        if not configure_commands:
+            configure_commands = ':'
+        if not make_commands:
+            make_commands = ':'
+        if not install_commands:
+            install_commands = ':'
+        output_file.write(f'one_line: {preinstall_commands.replace("\n", " && ")} && {configure_commands} && {make_commands} && {install_commands}\n')
 
 
 if __name__ == '__main__':
     main()
+#chapter="05"; for file in $(ls chapter$chapter); do if [[ $file != "introduction.xml" && $file != "chapter$chapter.xml" ]]; then python3 parser.py chapter$chapter/$file; fi; done
